@@ -1,0 +1,6 @@
+SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:2000@localhost/blog2'
+MAIL_USERNAME = '2561908792@qq.com'
+MAIL_PASSWORD = 'eznhyrcljopjebea'
+FLASKY_MAIL_SENDER = 'Admin <2561908792@qq.com>'
+SESSION_PROTECTION = 'haiduhaihfdasdjifahufwee'
+SECRET_KEY = 'super-secret'

@@ -1,0 +1,17 @@
+#数据库模块配置
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+
+#mail模块配置
+MAIL_SERVER = 'smtp.qq.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+FLASKY_MAIL_SUBJECT_PREFIX = 'mcc'
+# SERVER_NAME = '127.0.0.1:5000'
+
+#utils配置
+DEBUG = True
+
+
+#常规配置
+FLASKY_COMMENTS_PER_PAGE=4
