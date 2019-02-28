@@ -5,12 +5,14 @@ from flask_script import Manager , Shell,Server
 from flask_migrate import Migrate , MigrateCommand
 from flask import redirect,url_for,render_template
 import click
+from flask_cors import CORS
+import logging
 
 app = create_app()
+CORS(app)
 manager = Manager(app)
 migrate = Migrate(app,db)#数据库迁移
-
-
+logging.getLogger('flask_cors').level = logging.DEBUG
 
 def make_shell_context():
     return dict(app = app , db = db , User = User , Role=Role ,  Article = Article , Comment=Comment,Permission=Permission)

@@ -160,7 +160,8 @@ def make_json_dic(statusCode,**kwargs):
         mcc['user_username']=kwargs['user_username']
     if 'user_id' in kwargs:
         mcc['user_id']=kwargs['user_id']
-    
+    if 'is_admin' in kwargs:
+        mcc['is_admin']=kwargs['is_admin']
     
     #article模块
     if 'article_title' in kwargs:
@@ -197,7 +198,7 @@ def make_json_dic(statusCode,**kwargs):
 #弃用，以后时间以datetime.datetime.utcnow来获取
 def mcc_time():
     ISOTIMEFORMAT='%Y-%m-%d %X'
-    return  datetime.datetime.utcnow()
+    return  datetime.datetime.now()
 
 
 

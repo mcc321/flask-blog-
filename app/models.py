@@ -105,7 +105,8 @@ class User(UserMixin,db.Model):
     def to_json(self):
         j_data={
             "id":self.id,
-            "name":self.name
+            "name":self.name,
+            "is_admin":self.role.name=="Adminstrator",
         }
         return j_data
     @staticmethod
@@ -174,7 +175,8 @@ class Article(db.Model):
             "id":self.id,
             "writer":self.user.name,
             "title":self.title,
-            "date":self.date
+            "date":self.date,
+            "writer_id":self.user.id
         }
         return json_list
     def to_jsonArticle(self):

@@ -1,7 +1,7 @@
 from . import main
 from ..func import *
 from .func import *
-from ..models import User , Login_Form , Register_Form , Article , Comment , Permission,CommentForm
+from ..models import User , Login_Form , Register_Form , Article , Comment , Permission,CommentForm,Role
 from flask_login import login_required , current_user
 from flask import url_for,redirect,jsonify,render_template , current_app
 import sys
@@ -97,7 +97,7 @@ def blog_article_w():
 def blog_article_m():
     dic=json_loads()
     article=Article.query.filter_by(id=dic['id']).first()
-    if current_user.name==article.writer or current_user.role_id == 2:
+    if current_user.name==article.writer or current_user.role.name=="Adminstrator":
         article.title=dic["title"]
         article.content=dic["content"]
         db.session.add(article)
@@ -114,7 +114,7 @@ def blog_article_m():
 def blog_article_d():
         dic=json_loads()
         article=Article.query.filter_by(id=dic["id"]).first()
-        if current_user.name==article.writer or current_user.role_id == 2:
+        if current_user.name==article.writer or current_user.role.name=="Adminstrator":
             db.session.delete(article)
             db.session.commit()
             dic2=make_json_dic(200)
@@ -197,9 +197,10 @@ def upgradePermission():
     get_data=json_loads()
     id=get_data["id"]
     user=User.query.filter_by(id=id).first()
-    if(user.role_id!=2):
+    if(user.role.name !="Adminstrator"):
         user.pri=2
-        user.role_id=2
+        user.role.name=="Adminstrator"
+        user.role_id=Role.query.filter_by(name="Adminstrator").first().id
         db.session.add(user)
         db.session.commit()
         return jsonify(make_json_dic(200,info="提升成功"))
@@ -213,7 +214,7 @@ def deleteUser():
     get_data=json_loads()
     id=get_data["id"]
     user=User.query.filter_by(id=id).first()
-    if user.role_id ==2:
+    if user.role.name=="Adminstrator":
         return jsonify(make_json_dic(301,info="无法删除管理员"))
     else:
         db.session.delete(user)
@@ -249,14 +250,13 @@ def getUserArticle(user_id):
 from ..util.wraps import login_required 
 #commment模块即可以添加评论，又可以分页显示评论
 @main.route('/article_comment/<int:id>',methods=['GET','POST'])
-@login_required
 def article_comment(id):
     article=Article.query.filter_by(id=id).first()
     form = CommentForm()
     #发表评论模块
-    if current_user.is_authenticated:
+    if form.body.data:
         mcc_print(form.body)
-        if form.body.data:
+        if current_user.is_authenticated:
             comment=Comment(body=form.body.data,article=article,user=current_user._get_current_object())
             mcc_print(comment.body)
             db.session.add(comment)
@@ -269,9 +269,9 @@ def article_comment(id):
             # dic=make_json_dic(200,comment_id=db_comment.id,body=form.body.data,article_title=article.title,date=datetime.datetime.utcnow(),writer=current_user._get_current_object().name,comment_pagination=pagination)
             dic=make_json_dic(200)
             return jsonify(dic)
-    else:
-        dic=make_json_dic(301)
-        return jsonify(dic)
+        else:
+            dic=make_json_dic(301,info="登陆查看评论")
+            return jsonify(dic)
 
     # #删除评论模块
     # info=json_loads()

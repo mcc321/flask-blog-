@@ -136,13 +136,9 @@ def registerId():
                     return jsonify(dic)
                     # return render_template('register.html')
             else:
-                dic=make_json_dic(301,user_username=name,date=mcc_time(),info=mcc_info('the form is not complete. '))
-                return jsonify(dic)
-                # return render_template('register.html')
+                return jsonify(make_json_dic(306,info="用户邮箱已注册"))
         else:
-            dic=make_json_dic(301,date=mcc_time(),info=mcc_info('the request is not supported.'))
-            return jsonify(dic)
-            # return render_template('register.html')
+            return jsonify(make_json_dic(304,info="用户名称已注册"))
 
 
 @auth.route('/login',methods=['POST','GET'])
@@ -160,25 +156,22 @@ def login():
                 password=dic['password']
                 user=User.query.filter_by(name=username).first()
                 mcc_print(user)
-                if user is not  None and password==user.password and user.confirmed==True:
-                    session["username"]=username
-                    session["password"]=password
-                    login_user(user,True)
-                    # dic=make_json_dic(200,user_username=current_user.name,date=mcc_time(),info=mcc_info('current user is login.'))
-                    # dic=make_json_dic(200,user_username=current_user.name,info=mcc_info('current user is login.'))
-                    dic=make_json_dic(200)
-                    return jsonify(dic)          
-                else:
-                    # dic=make_json_dic(301,user_username=current_user.name,date=mcc_time(),info=mcc_info('authenticate fail.'))
-                    dic=make_json_dic(301,info='账号密码错误或邮箱未激活')
+                if user:
+                    if user is not  None and password==user.password and user.confirmed==True:
+                        session["username"]=username
+                        session["password"]=password
+                        login_user(user,True)
+                        # dic=make_json_dic(200,user_username=current_user.name,date=mcc_time(),info=mcc_info('current user is login.'))
+                        # dic=make_json_dic(200,user_username=current_user.name,info=mcc_info('current user is login.'))
+                        dic=make_json_dic(200,is_admin=(user.role.name=="Adminstrator"))
+                        return jsonify(dic)          
+                    else:
+                        # dic=make_json_dic(301,user_username=current_user.name,date=mcc_time(),info=mcc_info('authenticate fail.'))
+                        dic=make_json_dic(301,info='账号密码错误或邮箱未激活')
                     return jsonify(dic)
+                else:
+                    return jsonify(make_json_dic(304,info="用户名不存在"))
             else:
-
-
-
-
-
-
                 dic=make_json_dic(301,info='请求方式错误')
                 return jsonify(dic)
         else:
@@ -189,7 +182,7 @@ def login():
 @auth.route('/islogin',methods=["GET"])
 def getState():
     if current_user.can(0x01):
-        j_data=make_json_dic(200,user_username=current_user._get_current_object().name,user_id=current_user._get_current_object().id)
+        j_data=make_json_dic(200,user_username=current_user._get_current_object().name,user_id=current_user._get_current_object().id,is_admin=(current_user.role.name=="Adminstrator"))
         return jsonify(j_data)
     else:
         j_data=make_json_dic(303)
